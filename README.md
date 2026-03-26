@@ -1,1 +1,1 @@
-# Gemma-Translator
+# gamma-translator
