@@ -1,0 +1,50 @@
+name: Gemma Translator CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+
+      - name: Install Ollama
+        # Downloads and installs the Ollama Linux binary
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Start Ollama in the Background
+        # The '&' ensures the server runs in the background so the pipeline can continue
+        run: |
+          ollama serve &
+          sleep 10 
+
+      - name: Pull translategemma Model
+        # Downloads the model weights so your app can use them
+        run: ollama pull translategemma:latest
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify Streamlit App Boots Successfully
+        run: |
+          # 1. Start the app in the background using the '&' symbol
+          streamlit run app.py &
+          
+          # 2. Give Streamlit 15 seconds to fully start and load the Gemma model
+          sleep 15
+          
+          # 3. Ping Streamlit's built-in health endpoint
+          # The '--fail' flag tells curl to crash the pipeline if the app doesn't respond
+          curl --fail --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8501/_stcore/health
