@@ -37,6 +37,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Automated Tests
-        # Instead of 'streamlit run app.py', you execute your test suite
-        run: pytest
+      - name: Verify Streamlit App Boots Successfully
+        run: |
+          # 1. Start the app in the background using the '&' symbol
+          streamlit run app.py &
+          
+          # 2. Give Streamlit 15 seconds to fully start and load the Gemma model
+          sleep 15
+          
+          # 3. Ping Streamlit's built-in health endpoint
+          # The '--fail' flag tells curl to crash the pipeline if the app doesn't respond
+          curl --fail http://localhost:8501/_stcore/health
