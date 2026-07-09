@@ -1,0 +1,42 @@
+name: Gemma Translator CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+
+      - name: Install Ollama
+        # Downloads and installs the Ollama Linux binary
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Start Ollama in the Background
+        # The '&' ensures the server runs in the background so the pipeline can continue
+        run: |
+          ollama serve &
+          sleep 10 
+
+      - name: Pull translategemma Model
+        # Downloads the model weights so your app can use them
+        run: ollama pull translategemma:latest
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Automated Tests
+        # Instead of 'streamlit run app.py', you execute your test suite
+        run: pytest
