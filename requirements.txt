@@ -1,2 +1,5 @@
 streamlit
 ollama
+pytest
+pandas
+requests
