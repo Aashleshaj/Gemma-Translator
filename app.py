@@ -72,11 +72,11 @@ text_to_translate = st.text_area(label="Enter Text to Translate:")
 
 if st.button("Translate"):
     if source_language and target_language and text_to_translate:
-        prompt = f"""
-        You are a professional {source_language} ({source_code}) to {target_language} ({target_code}) translator. Your goal is to accurately convey the meaning and nuances of the original {source_language} text while adhering to {target_language} grammar, vocabulary, and cultural sensitivities.
-        Produce only the {target_language} translation, without any additional explanations or commentary. Please translate the following {source_language} text into {target_language}:
-        {text_to_translate}
-        """
+        # prompt = f"""
+        # You are a professional {source_language} ({source_code}) to {target_language} ({target_code}) translator. Your goal is to accurately convey the meaning and nuances of the original {source_language} text while adhering to {target_language} grammar, vocabulary, and cultural sensitivities.
+        # Produce only the {target_language} translation, without any additional explanations or commentary. Please translate the following {source_language} text into {target_language}:
+        # {text_to_translate}
+        # """
 
         try:
             with st.spinner("⏳ Translating... (This may take a moment)"):
@@ -87,20 +87,19 @@ if st.button("Translate"):
                     timeout=120.0
                 )
                 
-                response = client.generate(
+                placeholder = st.empty()
+                output = ""
+                for chunk in client.generate(
                     model=st.session_state.selected_model,
-                    prompt=prompt,
-                    # stream=False,
-                )
-                output = response['response']
+                    system=system.format(source_language=source_language, target_language=target_language),
+                    prompt=text_to_translate.strip(),
+                    stream=True,
+                ):
+                    output += chunk["response"]
+                    placeholder.code(output, language=None)
 
-            # Show Results
-            st.subheader("📌 Translation Results")
-            st.markdown(output)
-
-            # Save in session for download
-            st.session_state["translation"] = output
-
+                st.session_state["translation"] = output
+                
         except Exception as e:
             # Replaced the hardcoded network error with the actual Python exception
             st.error(f"❌ Translation Failed: {type(e).__name__} - {str(e)}")
