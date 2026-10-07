@@ -87,7 +87,3 @@ sequenceDiagram
 - [ ] Implement translation history caching.
 - [ ] Add an evaluation metric module (e.g., integrating Ragas or DeepEval for translation quality assessment).
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Aashleshaj/Gemma-Translator/issues).
-
