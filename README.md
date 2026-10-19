@@ -11,7 +11,6 @@
 </div>
 
 ---
-
 ## 🚀 Introduction
 
 **Gemma-Translator** is a lightweight, fully private translation application that leverages the power of local Large Language Models (LLMs). By combining a sleek **Streamlit** web interface with **Ollama** for local model hosting, this tool provides highly accurate translations across multiple languages without relying on external APIs or sending your data to the cloud.
